@@ -143,8 +143,13 @@ delete  DELETE /rest/api/2/issue/{key}/worklog/{id}
 }
 ```
 
-`timeSpent` uses Jira units: `2h`, `45m`, `1h30m`, `1d`. A day is whatever the project
-configures, usually eight hours, so prefer hours to days.
+`timeSpent` uses Jira units and **requires a space between units**: `1h 30m`, not
+`1h30m`. The compact form is rejected with "Invalid time duration entered", which
+reads like a permissions problem but is purely formatting. Single units are fine on
+their own: `2h`, `45m`, `1d`. A day is whatever the project configures, usually eight
+hours, so prefer hours to days.
+
+`timeSpentSeconds` is accepted instead and avoids the question entirely.
 
 `started` is strict and rejects anything else:
 
