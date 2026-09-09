@@ -1,0 +1,11 @@
+{
+  "name": "areasim",
+  "owner": { "name": "Avishka G" },
+  "plugins": [
+    {
+      "name": "jira",
+      "source": "./jira",
+      "description": "Jira issue, comment and worklog operations with a local per-ticket work journal."
+    }
+  ]
+}

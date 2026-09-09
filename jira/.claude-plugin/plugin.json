@@ -1,0 +1,7 @@
+{
+  "name": "jira",
+  "version": "0.1.0",
+  "description": "Read and update Jira Cloud issues, post progress comments, log time, and keep a per-ticket work journal in docs/jira/.",
+  "author": { "name": "Avishka G" },
+  "keywords": ["jira", "atlassian", "worklog", "issue-tracking"]
+}
