@@ -1,0 +1,4 @@
+name: jira
+one_liner: Read and update Jira Cloud issues, comments and worklogs, and keep the local per-ticket work journal in docs/jira/ in sync.
+triggers: Use whenever the user mentions a Jira key like AR-123, asks to update a ticket, move it to another status, log time or hours spent, add or edit a progress comment, create a ticket, or asks what they worked on. Also use when the current git branch carries a ticket key.
+gotcha: When a request body carries text you wrote, use `/rest/api/2/`. Otherwise use `/rest/api/3/`. Version 3 demands Atlassian Document Format, a deep JSON tree. Version 2 takes a plain string.

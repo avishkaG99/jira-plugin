@@ -4,7 +4,7 @@
   "plugins": [
     {
       "name": "jira",
-      "source": "./jira",
+      "source": "./harness/claude",
       "description": "Jira issue, comment and worklog operations with a local per-ticket work journal."
     }
   ]

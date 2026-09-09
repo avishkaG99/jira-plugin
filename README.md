@@ -82,10 +82,10 @@ Restart, then run `/mcp` to confirm the server connected.
 ## Install for Cursor
 
 ```bash
-./cursor/install.sh /path/to/your/project
+./harness/cursor/install.sh /path/to/your/project
 ```
 
-It copies the rule to `<project>/.cursor/rules/jira.mdc`, writes the server into
+It copies the generated rule to `<project>/.cursor/rules/jira.mdc`, writes the server into
 `~/.cursor/mcp.json` with permissions `600`, and reuses your Claude Code credentials if
 they are already set so you are not asked twice. Restart Cursor and check
 Settings, MCP for a connected `jira` server.
@@ -176,21 +176,50 @@ recorded so a later edit targets the right entry instead of adding a duplicate.
 - Keep the token in `~/.claude/settings.json`, never in a project settings file, which is
   the one your team shares and the one most likely to be committed.
 
+## How it is built
+
+`core/` holds the knowledge, written once and editor-neutral. `harness/` holds the
+per-editor adapters, and most of it is generated:
+
+```bash
+scripts/sync.py           # compose core/ into every harness
+scripts/sync.py --check   # fail if a harness has drifted
+scripts/validate.py       # secrets, manifests, links, frontmatter, sync state
+```
+
+To change what the agent knows, edit `core/` and re-run sync. Never hand-edit a file
+under `harness/` that carries the generated banner. See [AGENTS.md](AGENTS.md).
+
 ## Repo layout
 
 ```
 jira-plugin/
 ├── .claude-plugin/marketplace.json   marketplace manifest
-└── jira/
-    ├── .claude-plugin/plugin.json    plugin manifest
-    ├── .mcp.json                     MCP server definition
-    ├── skills/jira/SKILL.md          how to drive Jira
-    ├── agents/jira.md                the jira subagent
-    ├── commands/                     /jira:log /jira:update /jira:standup
-    └── cursor/
-        ├── install.sh                wires it into Cursor
-        ├── mcp.json                  standalone server block
-        └── rules/jira.mdc            the conventions, as a Cursor rule
+├── AGENTS.md                         how to work on this repo
+├── core/                             single source of truth, hand-written
+│   ├── identity.yaml                 name, description, triggers, the v2 gotcha
+│   ├── rules.md                      the five always-apply rules
+│   ├── key-resolution.md             branch name to ticket key
+│   └── knowledge/
+│       ├── reading.md                how to GET
+│       ├── writing.md                how to POST/PUT, and the version 2 rule
+│       ├── workflows.md              what to do, step by step, per task
+│       ├── journal.md                the per-ticket journal format
+│       └── conventions.md            areaSim keys, branches, statuses
+├── harness/                          per-editor adapters, mostly generated
+│   ├── claude/                       Claude Code plugin
+│   │   ├── .claude-plugin/plugin.json
+│   │   ├── .mcp.json                 MCP server definition
+│   │   ├── skills/jira/              composed from core/
+│   │   ├── agents/jira.md            the jira subagent
+│   │   └── commands/                 /jira:log /jira:update /jira:standup
+│   └── cursor/
+│       ├── install.sh                wires it into Cursor
+│       ├── mcp.json                  standalone server block
+│       └── rules/jira.mdc            composed from core/
+└── scripts/
+    ├── sync.py                       compose core/ into every harness
+    └── validate.py                   secrets, manifests, links, sync state
 ```
 
 ## Alternative backend
