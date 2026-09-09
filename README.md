@@ -185,7 +185,11 @@ per-editor adapters, and most of it is generated:
 scripts/sync.py           # compose core/ into every harness
 scripts/sync.py --check   # fail if a harness has drifted
 scripts/validate.py       # secrets, manifests, links, frontmatter, sync state
+scripts/preflight.py      # launch the MCP server and call Jira for real
 ```
+
+Install instructions, including a block you can paste to any coding agent, are in
+[INSTALL.md](INSTALL.md).
 
 To change what the agent knows, edit `core/` and re-run sync. Never hand-edit a file
 under `harness/` that carries the generated banner. See [AGENTS.md](AGENTS.md).

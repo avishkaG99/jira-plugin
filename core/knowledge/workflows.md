@@ -21,7 +21,8 @@ Each is a full sequence. Do not skip the read steps.
 ### Post a progress update
 
 1. Resolve the key.
-2. `jira_get_issue` for current status, and `jira_ls_comments` for what has been said.
+2. `GET /rest/api/3/issue/{key}` with `fields=summary,status` for current state, and
+   `GET /rest/api/2/issue/{key}/comment` for what has been said.
 3. Compose from the journal's newest entries plus commits on the branch since it
    diverged. Keep it to what changed and what is next.
 4. If this revises a comment you posted earlier, edit that one.
@@ -44,7 +45,7 @@ rather than making two requests.
 
 1. Confirm project, type, summary, and parent if it is a subtask.
 2. Draft the description and show it.
-3. `jira_create_issue`.
+3. `POST /rest/api/2/issue`.
 4. Report the new key and its browse URL.
 5. Start a journal file for it.
 

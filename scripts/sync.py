@@ -59,6 +59,10 @@ description: {ident['one_liner']} {ident['triggers']}
 
 Jira runs through the `jira` MCP server. Never write raw `curl` against the Jira API.
 
+The server exposes five tools and no others: `jira_get`, `jira_post`, `jira_put`,
+`jira_patch`, `jira_delete`. Each takes a REST `path`, optional `queryParams`, and a
+`body` for the write verbs. Responses are TOON, not JSON.
+
 ## Rules that always apply
 
 {body('rules.md')}
@@ -92,6 +96,10 @@ alwaysApply: false
 # Jira
 
 Jira runs through the `jira` MCP server. Never write raw `curl` against the Jira API.
+
+The server exposes five tools and no others: `jira_get`, `jira_post`, `jira_put`,
+`jira_patch`, `jira_delete`. Each takes a REST `path`, optional `queryParams`, and a
+`body` for the write verbs. Responses are TOON, not JSON.
 
 ## Rules that always apply
 

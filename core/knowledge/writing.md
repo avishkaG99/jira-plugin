@@ -7,6 +7,9 @@ tags: write, post, put, comment, worklog, transition, adf, version-2
 
 **Draft every write for the user and wait for approval before sending it.**
 
+Every write is `jira_post`, `jira_put`, `jira_patch` or `jira_delete` with a `path` and a
+`body`. There are no per-entity tools. Responses come back as TOON, not JSON.
+
 ### The version 2 rule
 
 > When the request body contains text you wrote, use `/rest/api/2/`.
@@ -95,8 +98,8 @@ A description sent this way needs document format, so write descriptions with
 
 ### Creating an issue
 
-Use `jira_create_issue`. It handles the body format for you. Falling back to
-`POST /rest/api/2/issue`:
+`POST /rest/api/2/issue`. There is no dedicated create tool, so version 2 matters here:
+it lets the description be a plain string.
 
 ```json
 { "fields": {

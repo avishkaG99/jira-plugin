@@ -7,28 +7,44 @@ tags: read, get, search, jql, issue, comment, worklog, transition
 
 Reads never need approval. Do them freely and do them first.
 
-### Dedicated tools
+### The tool surface
 
-| Task | Tool | Notes |
-| --- | --- | --- |
-| One issue | `jira_get_issue` | Pass the key, e.g. `AR-664` |
-| Search | `jira_ls_issues` | Takes JQL |
-| Comments | `jira_ls_comments` | Newest first is usually what you want |
-| Projects | `jira_ls_projects` | |
-| Statuses | `jira_ls_statuses` | All statuses in the project, not what is reachable now |
+The server exposes exactly five tools. There are no per-entity tools, so every read is
+`jira_get` with a REST path.
 
-### Generic reads
+| Tool | Params |
+| --- | --- |
+| `jira_get` | `path` (required), `queryParams`, `jq`, `outputFormat` |
+| `jira_post` | `path`, `body` (both required), `queryParams`, `jq`, `outputFormat` |
+| `jira_put` | `path`, `body` (both required), `queryParams`, `jq`, `outputFormat` |
+| `jira_patch` | `path`, `body` (both required), `queryParams`, `jq`, `outputFormat` |
+| `jira_delete` | `path` (required), `queryParams`, `jq`, `outputFormat` |
 
-Anything without a dedicated tool goes through `jira_get` with a REST path.
+Responses come back as TOON, an indented key-value format, not JSON. It is compact and
+readable. Pass `outputFormat: "json"` only when you genuinely need JSON.
+
+Use `jq` to narrow large responses rather than pulling everything and discarding it. An
+issue with all fields is thousands of tokens; three fields is a few dozen.
+
+### Common reads
 
 ```
+issue         GET /rest/api/3/issue/{key}      queryParams: {"fields": "summary,status,assignee"}
+search        GET /rest/api/3/search/jql       queryParams: {"jql": "...", "fields": "summary,status"}
+comments      GET /rest/api/2/issue/{key}/comment
 worklogs      GET /rest/api/2/issue/{key}/worklog
 transitions   GET /rest/api/3/issue/{key}/transitions
+projects      GET /rest/api/3/project/search
 current user  GET /rest/api/3/myself
-find a user   GET /rest/api/3/user/search?query=someone@example.com
+find a user   GET /rest/api/3/user/search      queryParams: {"query": "someone@example.com"}
 ```
 
-Reads may use version 3 safely. The version 2 rule only concerns bodies you send.
+Always pass `fields` when reading an issue. The default returns every field including
+large custom ones.
+
+Reads may use version 3 safely. The version 2 rule only concerns bodies you send, though
+reading comments and worklogs from version 2 gives plain text instead of a document tree,
+which is easier to quote back.
 
 ### JQL worth knowing
 
@@ -43,8 +59,8 @@ Quote any status name containing a space. `currentUser()` avoids hardcoding an a
 
 ### Before any write
 
-- Posting a comment? Run `jira_ls_comments` first. If you are revising something you
-  already said, edit that comment instead of adding another.
+- Posting a comment? Read the comments first. If you are revising something you already
+  said, edit that comment instead of adding another.
 - Logging time? List the worklogs first and check no entry already covers that span.
-- Changing status? Fetch the transitions. The names available depend on the current
-  status, so the full status list is not a substitute.
+- Changing status? Fetch the transitions. Which ones exist depends on the current status,
+  so a list of all project statuses is not a substitute.

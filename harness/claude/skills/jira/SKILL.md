@@ -9,6 +9,10 @@ description: Read and update Jira Cloud issues, comments and worklogs, and keep 
 
 Jira runs through the `jira` MCP server. Never write raw `curl` against the Jira API.
 
+The server exposes five tools and no others: `jira_get`, `jira_post`, `jira_put`,
+`jira_patch`, `jira_delete`. Each takes a REST `path`, optional `queryParams`, and a
+`body` for the write verbs. Responses are TOON, not JSON.
+
 ## Rules that always apply
 
 1. **Every write is drafted first.** Show the exact comment text, worklog or field change
