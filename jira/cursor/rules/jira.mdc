@@ -1,0 +1,58 @@
+---
+description: Jira issue, comment and worklog conventions for the areaSim project. Apply when the user mentions a Jira key like AR-123, asks to update a ticket, log time, post a progress comment, or asks what they worked on.
+alwaysApply: false
+---
+
+# Jira
+
+Jira runs through the `jira` MCP server. Never write raw `curl` against the Jira API.
+
+## Approval
+
+Every write is drafted for the user before it is sent. Show the exact comment text,
+worklog or field change and wait for a yes. Reads need no approval.
+
+## Which tool
+
+Dedicated tools first: `jira_get_issue`, `jira_ls_issues`, `jira_ls_comments`,
+`jira_add_comment`, `jira_create_issue`, `jira_ls_projects`, `jira_ls_statuses`.
+
+Everything else goes through the generic REST verbs `jira_get`, `jira_post`, `jira_put`,
+`jira_patch`, `jira_delete`:
+
+```
+worklogs      GET|POST   /rest/api/2/issue/{key}/worklog
+              PUT|DELETE /rest/api/2/issue/{key}/worklog/{id}
+transitions   GET|POST   /rest/api/3/issue/{key}/transitions
+edit fields   PUT        /rest/api/3/issue/{key}
+assignee      PUT        /rest/api/3/issue/{key}/assignee
+edit comment  PUT        /rest/api/2/issue/{key}/comment/{id}
+```
+
+## The v2 rule
+
+When your request body contains text you wrote, use `/rest/api/2/`. Otherwise use
+`/rest/api/3/`. Version 3 demands Atlassian Document Format, a deep JSON tree. Version 2
+takes the same field as a plain string and converts it server side.
+
+```json
+POST /rest/api/2/issue/AR-664/worklog
+{ "timeSpent": "2h30m", "started": "2026-09-09T09:00:00.000+0530",
+  "comment": "Traced the forced sign-out to the session cookie clear." }
+```
+
+`started` is strict: `YYYY-MM-DDTHH:mm:ss.SSS±hhmm`. Milliseconds required, no colon in
+the offset. `timeSpent` uses Jira units: `2h`, `45m`, `1h30m`, `1d`.
+
+## Rules
+
+- Resolve the issue key from the git branch when the user does not give one.
+  `fix/ar-664-accept-invite` means `AR-664`. Two repos: `areasim-backend`, `areasim-webapp`.
+- Read before writing. List comments or worklogs first so you edit an existing entry
+  rather than adding a near-duplicate.
+- Never guess a status name. Fetch transitions and post the transition id.
+- Record what you wrote in `docs/jira/<KEY>.md` under today's date, including the id the
+  API returned.
+- Never invent progress. If you cannot substantiate a claim from the diff, the journal or
+  the user, leave it out.
+- Project key `AR`.
