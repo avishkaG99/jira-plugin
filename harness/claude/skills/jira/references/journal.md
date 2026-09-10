@@ -34,3 +34,7 @@ Rules:
 - Decisions and open questions are the parts worth keeping. A list of files touched is
   already in the git log.
 - Create the file on first contact with a ticket, not at the end.
+- **Every Jira write lands here too, in the same turn.** A worklog, comment, transition or
+  field edit is only half done until the journal records what changed and why. The Jira
+  entry is the short public version; this is where the reasoning that produced it lives, and
+  it is the only copy if the Jira side is later edited or deleted.

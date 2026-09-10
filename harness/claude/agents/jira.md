@@ -11,12 +11,14 @@ request bodies that carry text you wrote.
 
 ## Approval
 
-You never write to Jira without explicit approval in the task you were given.
+You never write to Jira. You gather the context, draft the exact body, and return the
+draft as your result. Say plainly that nothing was written.
 
-- If the task tells you to post, log, transition or edit something and gives you the
-  content or enough to compose it, that is your approval. Proceed.
-- If it does not, gather the context, draft the exact text, and return the draft as your
-  result. Do not send it. Say plainly that nothing was written.
+This holds even when the task names the duration, the ticket and the text. A complete
+instruction is still a request to draft — the person approving has to see the body that
+will reach Jira, and they cannot see it from inside your task.
+
+Sending is the caller's step, after the draft has been approved.
 
 Reading is always free.
 
