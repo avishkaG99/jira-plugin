@@ -1,6 +1,6 @@
 ---
 title: Task workflows
-tags: workflow, log-time, manual-work, daily-file, hours-worked, progress-update, transition, standup, create
+tags: workflow, log-time, manual-work, daily-file, backfill, hours-worked, progress-update, transition, standup, create
 ---
 
 ## Task workflows
@@ -67,6 +67,26 @@ rather than making two requests.
 3. `POST /rest/api/2/issue`.
 4. Report the new key and its browse URL.
 5. Start a journal file for it, add a row to today's daily file, and rebuild the index.
+
+### Backfill past days
+
+For days before the daily file existed. The journals are the source: only work they record
+is backfilled.
+
+1. Collect every worklog id recorded in `docs/jira/*.md`, with its ticket. Skip ids the journal
+   attributes to someone else. The earliest journal date with a worklog is the start point;
+   go no further back.
+2. `GET /rest/api/2/issue/{key}/worklog` with `startedAfter` / `startedBefore` (epoch ms,
+   local midnight) for those tickets, and take each recorded id's `started` and
+   `timeSpentSeconds`. Worklogs the journals never recorded stay out.
+3. One `worklog` row per id on its start date: `Time` = start plus duration, `Logged` =
+   `✅ <duration> · worklog <id>`, summary from the journal's title line.
+4. Fill `Jira writes` from that day's journal entries: descriptions, comment ids,
+   transitions, deleted worklogs. Leave `—` when the journal records none.
+5. A journal day that shows Jira writes but no worklog gets a `session` row with `—` time and
+   ⏳. Do not estimate a duration.
+6. Never overwrite an existing daily file. Then rebuild the index, and point out days where
+   *Logged* exceeds *Worked*: overlapping worklogs, possibly double-booked time.
 
 ### Standup summary
 

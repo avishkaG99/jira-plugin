@@ -71,7 +71,12 @@ Rules:
 - `Source` is `session` when the agent saw the work happen: start is the first action on
   the ticket, end is the last. It is `manual` when the user reported the work (a meeting, a
   review, anything outside a session). **Record manual times exactly as given.** Never
-  round, stretch or infer them.
+  round, stretch or infer them. It is `worklog` when the row was backfilled from an existing
+  Jira worklog: `Time` is the worklog's start plus its duration.
+- `Ticket` links to the journal (`[AR-613](../AR-613.md)`), or is the bare key when the ticket
+  has no journal.
+- A `session` row whose times were never recorded keeps `—` in `Time`. The totals then
+  report it as untimed rather than guessing.
 - `Jira writes` holds short labels only: `description`, `comment 10432`,
   `→ In Progress`. Ids with reasoning go in the ticket journal.
 - `Logged` is ⏳ until a worklog covers the row, then `✅ <duration> · worklog <id>`.

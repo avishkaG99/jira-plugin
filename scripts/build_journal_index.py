@@ -28,6 +28,7 @@ DAILY_FILE = re.compile(r"^\d{4}-\d{2}-\d{2}\.md$")
 TITLE = re.compile(r"^#\s+([A-Z][A-Z0-9]+-\d+)\s+[—–-]\s+(.+?)\s*$")
 STATUS = re.compile(r"^Status:\s*([^·\n]+)", re.M)
 DAY = re.compile(r"^###\s+(\d{4}-\d{2}-\d{2})", re.M)
+TICKET_CELL = re.compile(r"^\[?[A-Z][A-Z0-9]+-\d+\b")
 SPAN = re.compile(r"^\s*(\d{1,2}):(\d{2})\s*[–—-]\s*(\d{1,2}):(\d{2})\s*$")
 CELL_SPLIT = re.compile(r"(?<!\\)\|")
 TOTALS_BLOCK = re.compile(re.escape(TOTALS_START) + r".*?" + re.escape(TOTALS_END) + r"\n?", re.S)
@@ -82,10 +83,11 @@ def union_minutes(spans):
 def read_daily_rows(text):
     rows = []
     for line in text.splitlines():
-        if not line.startswith("| ["):
+        if not line.startswith("| "):
             continue
         cells = [c.strip() for c in CELL_SPLIT.split(line.strip().strip("|"))]
-        if len(cells) < 6:
+        # A ticket row: first cell is a key, linked to its journal or bare when it has none.
+        if len(cells) < 6 or not TICKET_CELL.match(cells[0]):
             continue
         rows.append({"time": cells[2], "logged": cells[5]})
     return rows

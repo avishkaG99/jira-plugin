@@ -289,6 +289,26 @@ rather than making two requests.
 4. Report the new key and its browse URL.
 5. Start a journal file for it, add a row to today's daily file, and rebuild the index.
 
+### Backfill past days
+
+For days before the daily file existed. The journals are the source: only work they record
+is backfilled.
+
+1. Collect every worklog id recorded in `docs/jira/*.md`, with its ticket. Skip ids the journal
+   attributes to someone else. The earliest journal date with a worklog is the start point;
+   go no further back.
+2. `GET /rest/api/2/issue/{key}/worklog` with `startedAfter` / `startedBefore` (epoch ms,
+   local midnight) for those tickets, and take each recorded id's `started` and
+   `timeSpentSeconds`. Worklogs the journals never recorded stay out.
+3. One `worklog` row per id on its start date: `Time` = start plus duration, `Logged` =
+   `✅ <duration> · worklog <id>`, summary from the journal's title line.
+4. Fill `Jira writes` from that day's journal entries: descriptions, comment ids,
+   transitions, deleted worklogs. Leave `—` when the journal records none.
+5. A journal day that shows Jira writes but no worklog gets a `session` row with `—` time and
+   ⏳. Do not estimate a duration.
+6. Never overwrite an existing daily file. Then rebuild the index, and point out days where
+   *Logged* exceeds *Worked*: overlapping worklogs, possibly double-booked time.
+
 ### Standup summary
 
 Read only. Write nothing, locally or to Jira.
@@ -382,7 +402,12 @@ Rules:
 - `Source` is `session` when the agent saw the work happen: start is the first action on
   the ticket, end is the last. It is `manual` when the user reported the work (a meeting, a
   review, anything outside a session). **Record manual times exactly as given.** Never
-  round, stretch or infer them.
+  round, stretch or infer them. It is `worklog` when the row was backfilled from an existing
+  Jira worklog: `Time` is the worklog's start plus its duration.
+- `Ticket` links to the journal (`[AR-613](../AR-613.md)`), or is the bare key when the ticket
+  has no journal.
+- A `session` row whose times were never recorded keeps `—` in `Time`. The totals then
+  report it as untimed rather than guessing.
 - `Jira writes` holds short labels only: `description`, `comment 10432`,
   `→ In Progress`. Ids with reasoning go in the ticket journal.
 - `Logged` is ⏳ until a worklog covers the row, then `✅ <duration> · worklog <id>`.

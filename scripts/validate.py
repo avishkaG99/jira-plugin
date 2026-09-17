@@ -70,8 +70,10 @@ if mk.exists():
 print("\nlinks")
 bad = []
 for md in files("*.md"):
-    # Links inside fenced code blocks are examples of files in the user's project, not links.
+    # Links inside code (fenced blocks or inline spans) are examples of files in the user's
+    # project, not links in this repo.
     prose = re.sub(r"^```.*?^```", "", md.read_text(), flags=re.S | re.M)
+    prose = re.sub(r"`[^`\n]+`", "", prose)
     for _, target in re.findall(r"\[([^\]]+)\]\(([^)]+)\)", prose):
         if target.startswith(("http", "#", "mailto:")):
             continue
