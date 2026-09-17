@@ -1,6 +1,6 @@
 ---
 title: Task workflows
-tags: workflow, log-time, manual-work, daily-file, progress-update, transition, standup, create
+tags: workflow, log-time, manual-work, daily-file, hours-worked, progress-update, transition, standup, create
 ---
 
 ## Task workflows
@@ -21,8 +21,9 @@ Each is a full sequence. Do not skip the read steps.
    the day.
 6. Show the user the duration, start time and description. Wait for approval.
 7. `POST /rest/api/2/issue/{key}/worklog`.
-8. Append to the journal with the returned worklog id, and set the row's `Logged` to
-   `✅ <duration> · worklog <id>` in the same turn.
+8. Append to the journal with the returned worklog id, set the row's `Logged` to
+   `✅ <duration> · worklog <id>`, and rebuild the index so the day's totals update, all in
+   the same turn.
 
 ### Record manual work
 
@@ -32,8 +33,9 @@ did not see.
 1. Resolve the key. Ask if the user did not name one; do not guess from the branch.
 2. Add a `manual` row to that day's daily file with the times exactly as given. Create the
    file if it does not exist yet.
-3. If this is the first contact with the ticket, start its journal and rebuild the index.
-4. Offer to draft the worklog. Adding the row is not approval to post one.
+3. If this is the first contact with the ticket, start its journal.
+4. Rebuild the index, which also updates that day's totals.
+5. Offer to draft the worklog. Adding the row is not approval to post one.
 
 ### Post a progress update
 
@@ -77,4 +79,14 @@ Read only. Write nothing, locally or to Jira.
 3. For each issue, read the worklogs and comments the user authored in that window.
 4. Read journal files only for tickets named in steps 1–2, for detail Jira does not carry.
 5. Report three lists: what moved, what is in flight, what is blocked. Name each by key
-   and summary. State the total time logged, and list any ⏳ rows as unlogged time.
+   and summary. Give each day's worked, logged and unlogged totals from its daily file's
+   totals block, and list the ⏳ rows. Don't add up durations yourself.
+
+### Hours worked
+
+Read only. For "how many hours did I work today / this week":
+
+1. Read `docs/jira/README.md` for the last seven days, or the totals block of each daily
+   file in the range. If `build_journal_index.py --check` reports stale files, rebuild first.
+2. Report worked, logged and unlogged per day and the sum for the range, then the ⏳ rows.
+3. Say plainly that only work the agent saw or the user reported is counted.

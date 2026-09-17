@@ -15,5 +15,6 @@ Log work against Jira. Arguments: $ARGUMENTS
 5. Show the user the duration, start time and description you are about to submit.
    Wait for approval.
 6. On approval, POST to `/rest/api/2/issue/<KEY>/worklog`, then append the entry and the
-   returned worklog id to the journal under today's date, and set the daily row's
-   `Logged` to `✅ <duration> · worklog <id>`.
+   returned worklog id to the journal under today's date, set the daily row's `Logged` to
+   `✅ <duration> · worklog <id>`, and run
+   `python3 jira-plugin/scripts/build_journal_index.py docs/jira` to update the day's totals.

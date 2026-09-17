@@ -175,7 +175,10 @@ the agent saw it (`session`) or you reported it (`manual`), the Jira writes made
 whether the time is logged yet (⏳ or `✅ 45m · worklog 11502`). Worklogs and standups read
 it first, so they don't have to rebuild the day from every journal.
 
-`docs/jira/README.md` is a generated index of every ticket journal, most recent first:
+Each daily file ends with a generated totals block: **worked** (clock time, overlaps counted
+once), **logged** (sum of ✅ worklogs) and **unlogged** (time still ⏳). `docs/jira/README.md`
+is a generated index showing those totals for the last seven days and every ticket journal,
+most recent first. One command rebuilds both:
 
 ```
 python3 jira-plugin/scripts/build_journal_index.py docs/jira
@@ -239,7 +242,7 @@ jira-plugin/
 │       └── rules/jira.mdc            composed from core/
 └── scripts/
     ├── sync.py                       compose core/ into every harness
-    ├── build_journal_index.py        generate docs/jira/README.md from the journals
+    ├── build_journal_index.py        generate docs/jira/README.md and daily totals
     └── validate.py                   secrets, manifests, links, sync state
 ```
 
