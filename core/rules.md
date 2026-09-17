@@ -11,4 +11,5 @@
 4. **Never invent progress.** Describe only what the diff, the journal or the user
    actually says happened. If you cannot substantiate it, leave it out.
 5. **Record what you wrote** in `docs/jira/<KEY>.md`, in the same turn, including the id
-   the API returned and why the change was made. Never leave a Jira write unjournalled.
+   the API returned and why the change was made, and update that ticket's row in today's
+   `docs/jira/daily/<YYYY-MM-DD>.md`. Never leave a Jira write unjournalled.

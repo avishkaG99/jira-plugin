@@ -70,7 +70,9 @@ if mk.exists():
 print("\nlinks")
 bad = []
 for md in files("*.md"):
-    for _, target in re.findall(r"\[([^\]]+)\]\(([^)]+)\)", md.read_text()):
+    # Links inside fenced code blocks are examples of files in the user's project, not links.
+    prose = re.sub(r"^```.*?^```", "", md.read_text(), flags=re.S | re.M)
+    for _, target in re.findall(r"\[([^\]]+)\]\(([^)]+)\)", prose):
         if target.startswith(("http", "#", "mailto:")):
             continue
         if not (md.parent / target.split("#")[0]).resolve().exists():

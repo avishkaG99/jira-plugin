@@ -168,6 +168,22 @@ Status: In Progress · Branch: fix/ar-664-accept-invite-forced-signout
 Entries are appended under today's date and never rewritten. Ids returned by the API are
 recorded so a later edit targets the right entry instead of adding a duplicate.
 
+### The daily file and the index
+
+`docs/jira/daily/YYYY-MM-DD.md` has one row per ticket worked that day: time span, whether
+the agent saw it (`session`) or you reported it (`manual`), the Jira writes made, and
+whether the time is logged yet (⏳ or `✅ 45m · worklog 11502`). Worklogs and standups read
+it first, so they don't have to rebuild the day from every journal.
+
+`docs/jira/README.md` is a generated index of every ticket journal, most recent first:
+
+```
+python3 jira-plugin/scripts/build_journal_index.py docs/jira
+```
+
+Tell the agent about work it didn't see, such as "AR-4, 14:00–14:45 sprint planning", and it
+adds a `manual` row with your times exactly as given.
+
 ## Safety
 
 - Reads run freely. Every write is drafted for you and sent only on your approval.
@@ -208,7 +224,7 @@ jira-plugin/
 │       ├── reading.md                how to GET
 │       ├── writing.md                how to POST/PUT, and the version 2 rule
 │       ├── workflows.md              what to do, step by step, per task
-│       ├── journal.md                the per-ticket journal format
+│       ├── journal.md                the per-ticket journal, daily file and index
 │       └── conventions.md            areaSim keys, branches, statuses
 ├── harness/                          per-editor adapters, mostly generated
 │   ├── claude/                       Claude Code plugin
@@ -223,6 +239,7 @@ jira-plugin/
 │       └── rules/jira.mdc            composed from core/
 └── scripts/
     ├── sync.py                       compose core/ into every harness
+    ├── build_journal_index.py        generate docs/jira/README.md from the journals
     └── validate.py                   secrets, manifests, links, sync state
 ```
 
